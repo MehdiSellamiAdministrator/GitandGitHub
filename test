@@ -1,45 +1,5 @@
-# Retrieve the HTML page
-url = "https://procurement-notices.undp.org/"
-response = requests.get(url)
-html = response.text
+# Create a pandas DataFrame from the list of titles
+df_title = pd.DataFrame(titles, columns=["Title"])
 
-# Parse the HTML with BeautifulSoup
-soup = BeautifulSoup(html, 'html.parser')
-
-# Extract all rows from the table containing the data
-rows = soup.find_all('tr', {'class': 'odd'}) + soup.find_all('tr', {'class': 'even'})
-
-# Initialize an empty list to store the titles
-titles = []
-
-# Iterate through each row and extract the title from the 3rd column
-for row in rows:
-    columns = row.find_all('td')
-    title = columns[3].text.strip()
-    titles.append(title)
-
-# Display the extracted titles
-for title in titles:
-    print(title)
-
-# Extracting data from the table rows
-body_rows = body[1:]
-all_rows = []
-for row_num in range(len(body_rows)):
-    row = []
-    for row_item in body_rows[row_num].find_all("td"):
-        if row_item.find("a") is not None:
-            # If the cell contains a link, extract the link
-            link = row_item.find("a").get("href")
-            row.append(link)
-        else:
-            # If the cell doesn't contain a link, clean the text using regular expressions
-            aa = re.sub("(\xa0)|(\n)|,", "", row_item.text)
-            row.append(aa)
-    all_rows.append(row)
-
-# Creating a pandas DataFrame from the extracted data
-data = pd.DataFrame(data=all_rows, columns=headings)
-
-# Output the contents of the `data` DataFrame
-data
+# Display the contents of the df_title DataFrame
+df_title
