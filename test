@@ -1,25 +1,26 @@
-# Sending an HTTP request to the specified URL and getting the HTML content
-html = requests.get("https://procurement-notices.undp.org/").text
+# Retrieve the HTML page
+url = "https://procurement-notices.undp.org/"
+response = requests.get(url)
+html = response.text
 
-# Parsing the HTML content using BeautifulSoup
-soup = BeautifulSoup(html, "lxml")
+# Parse the HTML with BeautifulSoup
+soup = BeautifulSoup(html, 'html.parser')
 
-# Finding all tables with the specified class
-gdp = soup.find_all("table", attrs={"class": "standard cellborder"})
-print("Number of tables on site: ", len(gdp))
+# Extract all rows from the table containing the data
+rows = soup.find_all('tr', {'class': 'odd'}) + soup.find_all('tr', {'class': 'even'})
 
-# Selecting the first table (index 0)
-table1 = gdp[0]
+# Initialize an empty list to store the titles
+titles = []
 
-# Extracting the table rows from the table body
-body = table1.find_all("tr")
+# Iterate through each row and extract the title from the 3rd column
+for row in rows:
+    columns = row.find_all('td')
+    title = columns[3].text.strip()
+    titles.append(title)
 
-# Extracting the table headers (column names) from the first row
-head = body[0]
-headings = ["logo"]
-for item in head.find_all("th"):
-    item = item.text.rstrip("\n")
-    headings.append(item)
+# Display the extracted titles
+for title in titles:
+    print(title)
 
 # Extracting data from the table rows
 body_rows = body[1:]
