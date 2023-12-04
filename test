@@ -1,1 +1,44 @@
+# Sending an HTTP request to the specified URL and getting the HTML content
+html = requests.get("https://procurement-notices.undp.org/").text
 
+# Parsing the HTML content using BeautifulSoup
+soup = BeautifulSoup(html, "lxml")
+
+# Finding all tables with the specified class
+gdp = soup.find_all("table", attrs={"class": "standard cellborder"})
+print("Number of tables on site: ", len(gdp))
+
+# Selecting the first table (index 0)
+table1 = gdp[0]
+
+# Extracting the table rows from the table body
+body = table1.find_all("tr")
+
+# Extracting the table headers (column names) from the first row
+head = body[0]
+headings = ["logo"]
+for item in head.find_all("th"):
+    item = item.text.rstrip("\n")
+    headings.append(item)
+
+# Extracting data from the table rows
+body_rows = body[1:]
+all_rows = []
+for row_num in range(len(body_rows)):
+    row = []
+    for row_item in body_rows[row_num].find_all("td"):
+        if row_item.find("a") is not None:
+            # If the cell contains a link, extract the link
+            link = row_item.find("a").get("href")
+            row.append(link)
+        else:
+            # If the cell doesn't contain a link, clean the text using regular expressions
+            aa = re.sub("(\xa0)|(\n)|,", "", row_item.text)
+            row.append(aa)
+    all_rows.append(row)
+
+# Creating a pandas DataFrame from the extracted data
+data = pd.DataFrame(data=all_rows, columns=headings)
+
+# Output the contents of the `data` DataFrame
+data
