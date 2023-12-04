@@ -1,5 +1,9 @@
-# Create a pandas DataFrame from the list of titles
-df_title = pd.DataFrame(titles, columns=["Title"])
+# Merge the 'data' DataFrame and the 'df_title' DataFrame based on their indices
+merged_data = pd.merge(data, df_title.add_suffix(''), left_index=True, right_index=True)
 
-# Display the contents of the df_title DataFrame
-df_title
+# Displaying the column names of the merged_data DataFrame
+merged_data.columns
+
+# The 'merged_data' DataFrame is the result of merging the 'data' DataFrame and the 'df_title' DataFrame based on their indices.
+# It contains a combination of columns from the original 'data' DataFrame and the 'Title' column from 'df_title'.
+merged_data
